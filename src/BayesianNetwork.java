@@ -7,9 +7,9 @@ public class BayesianNetwork {
     // Hashmap of all the nodes.
     private HashMap<String, Node> Nodes;
     // Hashmap of all the parents of a node (incoming edges)
-    private HashMap<Integer, ArrayList<String>> Parents;
+    private HashMap<String, ArrayList<String>> Parents;
     // Hashmap of all the children of a node (out edges)
-    private HashMap<Integer, ArrayList<String>> Children;
+    private HashMap<String, ArrayList<String>> Children;
 
     public BayesianNetwork(){
 
@@ -34,6 +34,31 @@ public class BayesianNetwork {
     public void addNode(String name, Node node){
 
         this.Nodes.put(name, node);
+        this.Parents.put(name, new ArrayList<>());
+        this.Children.put(name, new ArrayList<>());
+    }
+
+    // add node's parent
+    public void addParent(String node, String parent){
+
+        if (!Parents.containsKey(node)) {
+            Parents.put(node, new ArrayList<>());
+        }
+        Parents.get(node).add(parent);
+    }
+
+    public void addChild(String node, String child){
+
+        if (!Children.containsKey(node)) {
+            Parents.put(node, new ArrayList<>());
+        }
+        Parents.get(node).add(child);
+    }
+
+    @Override
+    public String toString() {
+        return "Bayesian Network: { " + Nodes.values() +
+                "}";
     }
 
     public BayesianNetwork readXML(String fileName){
@@ -58,7 +83,7 @@ public class BayesianNetwork {
             scanner.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("Error: read XML");
             e.printStackTrace();
         }
         return net;
@@ -98,6 +123,7 @@ public class BayesianNetwork {
         //name
         String data = scanner.nextLine();
         String name = getData(data);
+        Node node = net.getNode(name);
 
         //parents
         data = scanner.nextLine();
@@ -108,22 +134,20 @@ public class BayesianNetwork {
 
         //initialize parents
         for (String parent : parents){
-
-            net.getNode(name).addParent(parent);
+            node.addParent(parent);
+            net.addParent(name, parent);
+            net.addChild(parent, name);
         }
 
         //probabilities:
         String[] probs = data.split(">")[1].split("<")[0].split(" ");
-        CPT cpt = new CPT();
-        for (String str : probs){
-            cpt.addProb(Double.parseDouble(str));
-        }
-
+        CPT cpt = new CPT(net, node, probs);
+        node.setCPT(cpt);
 
     }
 
     private static String getData(String line){
-        String value = line.split(">")[1].split("<")[0];
-        return value;
+
+        return line.split(">")[1].split("<")[0];
     }
 }
