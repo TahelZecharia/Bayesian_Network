@@ -3,8 +3,9 @@ import java.util.*;
 public class SimpleAlgo {
 
     private BayesianNetwork net;
+
     // Hashmap with the query variable and his outcomes
-    private HashMap<String, String> query = new HashMap<>();
+    private String[] query = new String[2];
     // Hashmap with the query variable and his outcomes
     private HashMap<String, ArrayList<String>> notQuery = new HashMap<>();
     // Hashmap of all the evidence variables and their outcomes
@@ -18,19 +19,29 @@ public class SimpleAlgo {
 
         net = bayesianNetwork;
 
-        // query:
-        query.put(""+q.charAt(2), ""+q.charAt(4));
+        q = q.replace("P","");
+        q = q.replace("(","");
+        q = q.replace(")","");
 
-        // not query:
-        notQuery.put(""+q.charAt(2), new ArrayList<>());
-        for (String outcome : bayesianNetwork.getNode(""+q.charAt(2)).getOutcomes()){
-            if (query.get(""+q.charAt(2)) != outcome){
-                notQuery.get(""+q.charAt(2)).add(outcome);
+        String[] quer=q.split("\\|");
+
+        String[] qqq =quer[0].split("=");
+        query[0] = qqq[0];
+        query[1] = qqq[1];
+
+        if(quer.length>=2){
+            String[] evidences=quer[1].split(",");
+            for (String evidence : evidences) {
+                this.evidences.put(evidence.split("=")[0], evidence.split("=")[1]);
             }
         }
-        // evidence:
-        for (int i = 6; i < q.length(); i+=4) {
-            evidences.put(""+q.charAt(i), ""+q.charAt(i+2));
+
+        // not query:
+        notQuery.put(this.query[0], new ArrayList<>());
+        for (String outcome : bayesianNetwork.getNode(this.query[0]).getOutcomes()){
+            if (!Objects.equals(this.query[1], outcome)){
+                notQuery.get(this.query[0]).add(outcome);
+            }
         }
 
         // hidden:
@@ -47,12 +58,28 @@ public class SimpleAlgo {
 
     public Double CalculateQuery(){
 
-        ArrayList<HashMap<String, String>> combinations  =  combinations(hiddens);
+        HashMap<String, ArrayList<String>> numerator = new HashMap<>();
+        HashMap<String, ArrayList<String>> denominator = new HashMap<>();
+
+        numerator.putAll(hiddens);
+        ArrayList<String> a = new ArrayList<>();
+        a.add(query[1]);
+        numerator.put(query[0], a);
+
+        denominator.putAll(hiddens);
+        denominator.putAll(notQuery);
+
+        double numeratorAns = CalculateProb(combinations(numerator));
+        double denominatorAns = CalculateProb(combinations(denominator));
+
+        return numeratorAns/(numeratorAns+denominatorAns);
+    }
+    public Double CalculateProb(ArrayList<HashMap<String, String>> combinations){
+
         double ans = 0;
 
         for (HashMap<String, String> comb : combinations){
 
-            comb.putAll(query);
             comb.putAll(evidences);
             double x = 1;
 
@@ -64,8 +91,6 @@ public class SimpleAlgo {
                 for (String perent : node.getParents()){
                     parents.put(perent, comb.get(perent));
                 }
-
-                System.out.println(node.getCPT().getProb(parents));
 
                 x *= node.getCPT().getProb(parents);
             }
@@ -112,7 +137,9 @@ public class SimpleAlgo {
 
         String st = "";
 
-        st+="query: " + query.toString() + ". ";
+        st+="query: " + Arrays.toString(query) + ". ";
+
+        st+="not query: " + notQuery.toString() + ". ";
 
         st+= "evidence: " + evidences.toString() + ". ";
 
