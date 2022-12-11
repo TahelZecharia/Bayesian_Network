@@ -29,6 +29,12 @@ class BayesianNetworkTest {
 
     @org.junit.jupiter.api.Test
     void addChild() {
+
+        HashMap<String, String> a = new HashMap<>();
+        a.put("a", "b");
+        a.put("a", "c");
+        System.out.println();
+
     }
 
     @org.junit.jupiter.api.Test

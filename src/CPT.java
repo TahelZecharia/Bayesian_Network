@@ -3,11 +3,13 @@ import java.util.*;
 public class CPT {
 
     String[][] table;
+    int cols;
+    int rows;
 
     public CPT(BayesianNetwork net, Node node, String[] cpt){
 
-        int cols = node.parentsSize() + 2;
-        int rows = cpt.length +1;
+        cols = node.parentsSize() + 2;
+        rows = cpt.length +1;
 
         table = new String[rows][cols];
 
@@ -60,6 +62,43 @@ public class CPT {
 
     }
 
+    String[][] getTable(){
+
+        return table;
+    }
+
+    String getTable(int row, int col){
+
+        return table[row][col];
+    }
+
+    ArrayList<String> getVariables(){
+
+        return new ArrayList<>(Arrays.asList(table[0]).subList(0, cols - 1));
+    }
+
+    int getRows(){
+
+        return rows;
+    }
+
+    int getCols(){
+
+        return cols;
+    }
+
+    String getOutcome(String name, int row){
+
+        for (int i = 0; i < cols; i++) {
+
+            if (Objects.equals(table[0][i], name)){
+                return table[row][i];
+            }
+        }
+        return "";
+    }
+
+
     Double getProb(HashMap<String, String> outcomes){
 
         for (String[] strings : table) {
@@ -91,11 +130,11 @@ public class CPT {
 
     @Override
     public String toString() {
-        String st = "";
+        StringBuilder st = new StringBuilder();
 
         for (String[] strings : table) {
 
-            st += Arrays.toString(strings) + "\n";
+            st.append(Arrays.toString(strings)).append("\n");
         }
         return "CPT: { \n" + st + "}";
     }
