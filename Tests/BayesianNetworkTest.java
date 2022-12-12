@@ -33,7 +33,7 @@ class BayesianNetworkTest {
         HashMap<String, String> a = new HashMap<>();
         a.put("a", "b");
         a.put("a", "c");
-        System.out.println();
+        System.out.println(a);
 
     }
 

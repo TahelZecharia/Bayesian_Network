@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class VariableEliminationAlgo {
 
@@ -71,12 +68,10 @@ public class VariableEliminationAlgo {
     Double CalculateQuery() {
         // sort hiddens
         for (String hidden : hiddens.keySet()) {
-            System.out.println(factorsList);
+
             Factor factor = Join(hidden);
-            System.out.println(hidden);
-            System.out.println(factorsList);
+
             Elimination(hidden, factor);
-            System.out.println(factorsList);
         }
         return Normalize();
     }
@@ -95,7 +90,7 @@ public class VariableEliminationAlgo {
 
         while (joinFactors.size() > 1) {
 
-            // sort joinFactors
+            // sort joinFactors!!!!!!!!!!
             Factor first = joinFactors.remove(0);
             Factor second = joinFactors.remove(0);
 
@@ -107,7 +102,7 @@ public class VariableEliminationAlgo {
 
             for (HashMap<String, String> firstHash : first.getTable()) {
 
-                for (HashMap<String, String> secondHash : first.getTable()) {
+                for (HashMap<String, String> secondHash : second.getTable()) {
 
                     boolean flag = true;
                     for (String var : intersectionVars) {
@@ -124,16 +119,13 @@ public class VariableEliminationAlgo {
                         HashMap<String, String> hash = new HashMap<>(firstHash);
                         hash.putAll(secondHash);
                         hash.put("P", String.valueOf((Double.parseDouble(firstHash.get("P")))*(Double.parseDouble(secondHash.get("P")))));
-//                        firstHash.remove("P");
-//                        secondHash.remove("P");
-//                        hash.putAll(firstHash);
-//                        hash.putAll(secondHash);
                         arr.add(hash);
                     }
                 }
             }
             joinFactors.add(new Factor(unionVars, arr));
         }
+
         return joinFactors.get(0);
     }
 
@@ -188,5 +180,29 @@ public class VariableEliminationAlgo {
             }
         }
         return (numerator/(numerator+denominator));
+    }
+
+    @Override
+    public String toString() {
+
+        String st = "";
+
+        st+="query: " + Arrays.toString(query) + ". ";
+
+        st+="not query: " + notQuery.toString() + ". ";
+
+        st+= "evidence: " + evidences.toString() + ". ";
+
+        st+= "hidden: {";
+        for (String string : hiddens.keySet()) {
+
+            st += string + ": ";
+            st += hiddens.get(string).toString()+", ";
+        }
+
+        st+= "factors: " + factorsList.toString() + ". ";
+        st+= "}.";
+
+        return "SimpleAlgo: { " + st + " }";
     }
 }
