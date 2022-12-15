@@ -15,6 +15,9 @@ public class VariableEliminationAlgo {
     // Array of all the Factors
     private ArrayList<Factor> factorsList = new ArrayList<>();
 
+    private int addCounter = 0;
+    private int mulCounter = 0;
+
     // get a BayesianNetwork and a query string (e.g P(B=T|J=T,M=T) )
     public VariableEliminationAlgo(BayesianNetwork bayesianNetwork, String q){
 
@@ -90,7 +93,7 @@ public class VariableEliminationAlgo {
 
         while (joinFactors.size() > 1) {
 
-            // sort joinFactors!!!!!!!!!!
+            joinFactors.sort(Factor::compareTo);
             Factor first = joinFactors.remove(0);
             Factor second = joinFactors.remove(0);
 
@@ -118,6 +121,7 @@ public class VariableEliminationAlgo {
 
                         HashMap<String, String> hash = new HashMap<>(firstHash);
                         hash.putAll(secondHash);
+                        mulCounter++;
                         hash.put("P", String.valueOf((Double.parseDouble(firstHash.get("P")))*(Double.parseDouble(secondHash.get("P")))));
                         arr.add(hash);
                     }
@@ -135,10 +139,10 @@ public class VariableEliminationAlgo {
         HashSet<String> variables = new HashSet<>(factor.getVariables());
         variables.remove(name);
 
-        while (factor.size() > 0) {
+        while (factor.getSize() > 0) {
 
             HashMap<String, String> hash = new HashMap<>(factor.getTable().remove(0));
-            for (int i = 0; i < factor.size(); i++) {
+            for (int i = 0; i < factor.getSize(); i++) {
 
                 boolean flag = true;
                 for (String key : variables) {
@@ -152,6 +156,7 @@ public class VariableEliminationAlgo {
 
                 if (flag) {
 
+                    addCounter++;
                     hash.put("P", String.valueOf(Double.parseDouble(hash.get("P"))+Double.parseDouble(factor.getTable().get(i).get("P"))));
                     factor.getTable().remove(i);
                     i--;
@@ -159,7 +164,11 @@ public class VariableEliminationAlgo {
             }
             arr.add(hash);
         }
-        factorsList.add(new Factor(variables, arr));
+        if ( arr.size() > 1)  {
+
+            factorsList.add(new Factor(variables, arr));
+        }
+
     }
 
     public Double Normalize() {
@@ -173,13 +182,26 @@ public class VariableEliminationAlgo {
 
             if (Objects.equals(hash.get(query[0]), query[1])) {
 
+                addCounter++;
                 numerator += Double.parseDouble(hash.get("P"));
             }
             else {
+                addCounter++;
                 denominator += Double.parseDouble(hash.get("P"));
             }
         }
+        addCounter++;
         return (numerator/(numerator+denominator));
+    }
+
+    public int getAddCounter(){
+
+        return addCounter;
+    }
+
+    public int getMulCounter() {
+
+        return mulCounter;
     }
 
     @Override

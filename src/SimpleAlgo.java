@@ -13,6 +13,9 @@ public class SimpleAlgo {
     // Hashmap of all the hidden variables and their outcomes
     private HashMap<String, ArrayList<String>> hiddens = new HashMap<>();
 
+    private int addCounter = 0;
+    private int mulCounter = 0;
+
 
     // get a BayesianNetwork and a query string (e.g P(B=T|J=T,M=T) )
     public SimpleAlgo(BayesianNetwork bayesianNetwork, String q){
@@ -72,6 +75,7 @@ public class SimpleAlgo {
         double numeratorAns = CalculateProb(combinations(numerator));
         double denominatorAns = CalculateProb(combinations(denominator));
 
+        addCounter++;
         return numeratorAns/(numeratorAns+denominatorAns);
     }
     public Double CalculateProb(ArrayList<HashMap<String, String>> combinations){
@@ -91,9 +95,10 @@ public class SimpleAlgo {
                 for (String perent : node.getParents()){
                     parents.put(perent, comb.get(perent));
                 }
-
+                mulCounter++;
                 x *= node.getCPT().getProb(parents);
             }
+            addCounter++;
             ans+=x;
         }
         return ans;
@@ -130,6 +135,16 @@ public class SimpleAlgo {
             temp.clear();
         }
         return ans;
+    }
+
+    public int getAddCounter(){
+
+        return addCounter;
+    }
+
+    public int getMulCounter() {
+
+        return mulCounter;
     }
 
     @Override

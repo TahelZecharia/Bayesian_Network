@@ -18,7 +18,7 @@ public class Ex1 {
             try{
 
                 // open input file:
-                File inputFile = new File("input.txt");
+                File inputFile = new File("input1.txt");
                 Scanner scanner = new Scanner(inputFile);
 
                 BayesianNetwork myNet = new BayesianNetwork();
@@ -42,23 +42,28 @@ public class Ex1 {
                     String algo = data.substring(data.length()-1);
                     String query = data.substring(0, data.length()-2);
 
-                    Double ans = 0.0;
+                    double ans = 0.0;
+                    int add = 0;
+                    int mul = 0;
 
                     if (Objects.equals(algo, "1")) {
 
                         SimpleAlgo myAlgo = new SimpleAlgo(myNet, query);
                         ans = myAlgo.CalculateQuery();
+                        add = myAlgo.getAddCounter();
+                        mul = myAlgo.getMulCounter();
 
                     } else if (Objects.equals(algo, "2")) {
 
                         VariableEliminationAlgo myAlgo = new VariableEliminationAlgo(myNet, query);
                         ans = myAlgo.CalculateQuery();
+                        add = myAlgo.getAddCounter();
+                        mul = myAlgo.getMulCounter();
                     }
 
                     else ans=3.0;
 
-//                    ans = ans+","+add_actions+","+add_dup;
-                    outputFile.write(String.format("%.5f%n", ans));
+                    outputFile.write(String.format("%.5f", ans) + "," + add + "," + mul);
 
                     if (scanner.hasNextLine()) {
                         outputFile.write("\n");

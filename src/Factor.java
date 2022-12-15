@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
-public class Factor {
+public class Factor implements Comparable<Factor>{
 
     private HashSet<String> variables  = new HashSet<>();
     private ArrayList<HashMap<String, String>> table = new ArrayList<>(); // ? table? ArrayList?
@@ -66,9 +63,14 @@ public class Factor {
         return variables;
     }
 
-    public int size() {
+    public int getSize() {
 
         return table.size();
+    }
+
+    public int getTableSize() {
+
+        return table.size() * table.get(0).size();
     }
 
     @Override
@@ -79,4 +81,38 @@ public class Factor {
                 ", table: '" + table.toString() + '\'' +
                 "}";
     }
+
+    @Override
+    public int compareTo(Factor o) {
+
+        // check by size:
+        if (this.getTableSize() > o.getTableSize()) {
+            return 1;
+        }
+        else if(this.getTableSize() < o.getTableSize()) {
+            return -1;
+        }
+
+        // if they have the same size:
+        int s1 = 0;
+        int s2 = 0;
+
+        for (String var : this.variables) {
+            for (int i = 0; i < var.length(); i++) {
+                s1 += var.charAt(i);
+            }
+        }
+
+        for (String var : o.getVariables()) {
+            for (int i = 0; i < var.length(); i++) {
+                s2 += var.charAt(i);
+            }
+        }
+
+        // check ascii size:
+        return Integer.compare(s1, s2);
+    }
 }
+
+
+

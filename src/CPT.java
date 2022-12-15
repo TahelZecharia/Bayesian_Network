@@ -51,8 +51,10 @@ public class CPT {
             }
             if(j != 0) {
 
-                outcomes = net.getNode(table[0][j - 1]).getOutcomes();
                 slice = slice * outcomes.size();
+
+                outcomes = net.getNode(table[0][j - 1]).getOutcomes();
+
             }
         }
 
