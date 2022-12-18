@@ -71,8 +71,6 @@ public class VariableEliminationAlgo {
                 System.out.println("Evidences Factor: " + factor);
 
             }
-
-
         }
     }
 
@@ -137,14 +135,6 @@ public class VariableEliminationAlgo {
             }
             relevant.add(currNode.getName());
         }
-
-//        for (String hidden : hiddens.keySet()) {
-//
-//            if (! relevant.contains(hidden)) {
-//
-//                hiddens.remove(hidden);
-//            }
-//        }
 
         return relevant;
     }

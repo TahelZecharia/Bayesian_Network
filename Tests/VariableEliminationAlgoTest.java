@@ -11,6 +11,11 @@ class VariableEliminationAlgoTest {
     @Test
     void calculateQuery() {
 
+        VariableEliminationAlgo Algo3 = new VariableEliminationAlgo(myNet, "P(A=T|B=F,E=T)");
+        System.out.printf("%.5f%n", Algo3.CalculateQuery()); // 0.29
+        System.out.println(Algo3.getAddCounter()); // 0
+        System.out.println(Algo3.getMulCounter()); // 0
+
 //        System.out.println(Algo1);
 //        System.out.printf("%.5f%n", Algo1.CalculateQuery()); // 0.28417
 //        System.out.printf("%.5f%n", Algo2.CalculateQuery()); // 0.84902

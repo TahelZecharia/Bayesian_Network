@@ -16,7 +16,6 @@ public class SimpleAlgo {
     private int addCounter = 0;
     private int mulCounter = 0;
 
-
     // get a BayesianNetwork and a query string (e.g P(B=T|J=T,M=T) )
     public SimpleAlgo(BayesianNetwork bayesianNetwork, String q){
 
@@ -61,6 +60,14 @@ public class SimpleAlgo {
 
     public Double CalculateQuery(){
 
+        if (net.getNode(query[0]).getParents().containsAll(evidences.keySet())) {
+
+            HashMap<String, String> outcomes = new HashMap<>(evidences);
+            outcomes.put(query[0], query[1]);
+
+            return net.getNode(query[0]).getCPT().getProb(outcomes);
+        }
+
         HashMap<String, ArrayList<String>> numerator = new HashMap<>();
         HashMap<String, ArrayList<String>> denominator = new HashMap<>();
 
@@ -78,6 +85,7 @@ public class SimpleAlgo {
         addCounter++;
         return numeratorAns/(numeratorAns+denominatorAns);
     }
+
     public Double CalculateProb(ArrayList<HashMap<String, String>> combinations){
 
         double ans = 0;
