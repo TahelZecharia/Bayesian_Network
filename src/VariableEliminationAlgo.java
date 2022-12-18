@@ -21,6 +21,7 @@ public class VariableEliminationAlgo {
     // get a BayesianNetwork and a query string (e.g P(B=T|J=T,M=T) )
     public VariableEliminationAlgo(BayesianNetwork bayesianNetwork, String q){
 
+        System.out.println("\n\n ***************** VariableEliminationAlgo *****************\n\n");
         net = bayesianNetwork;
 
         q = q.replace("P","");
@@ -58,25 +59,94 @@ public class VariableEliminationAlgo {
                 }
             }
         }
+//        Node node = ;
+        Factor factor = new Factor(net.getNode(query[0]).getCPT(), evidences);
+        factorsList.add(factor);
+        System.out.println( "Query Factor: " + factor);
 
-        // factors:
-        for (Node node : bayesianNetwork.getNodes().values()) {
+        for (String evidence : evidences.keySet()) {
+            factor = new Factor(net.getNode(evidence).getCPT(), evidences);
+            if (factor.getVariables().size() > 0){
+                factorsList.add(factor);
+                System.out.println("Evidences Factor: " + factor);
 
-            Factor factor = new Factor(node.getCPT(), evidences);
-            factorsList.add(factor);
-            System.out.println(factor);
+            }
+
+
         }
     }
 
     Double CalculateQuery() {
-        // sort hiddens
-        for (String hidden : hiddens.keySet()) {
+
+        ArrayList<String> sortHidden = new ArrayList<>(RemoveUnnecessaryVariables());
+        sortHidden.sort(String::compareToIgnoreCase);
+        // factors:
+        for (String hidden : sortHidden) {
+
+            Node node = net.getNode(hidden);
+            Factor factor = new Factor(node.getCPT(), evidences);
+            factorsList.add(factor);
+            System.out.println(factor);
+        }
+
+        for (String hidden : sortHidden) {
 
             Factor factor = Join(hidden);
+
+            System.out.println("Join ");
 
             Elimination(hidden, factor);
         }
         return Normalize();
+    }
+
+    private HashSet<String> RemoveUnnecessaryVariables() {
+
+        HashSet <String> relevant = new HashSet<>();
+        HashSet <String> tempSet = new HashSet<>();
+
+        for (String evidence : evidences.keySet()) {
+
+            for (String parent : net.getNode(evidence).getParents()) {
+
+                if ( (! evidences.containsKey(parent)) && (!Objects.equals(parent, query[0])) ) {
+
+                    tempSet.add(parent);
+                }
+            }
+        }
+
+        for (String parent : net.getNode(query[0]).getParents()) {
+
+            if (! evidences.containsKey(parent)) tempSet.add(parent);
+
+        }
+
+        ArrayList <String> tempArr = new ArrayList<>(tempSet);
+
+        while (! tempArr.isEmpty()) {
+
+            Node currNode = net.getNode(tempArr.remove(0));
+
+            for (String parent : currNode.getParents()) {
+
+                if ( (! evidences.containsKey(parent)) && (!Objects.equals(parent, query[0])) ) {
+
+                    tempArr.add(parent);
+                }
+            }
+            relevant.add(currNode.getName());
+        }
+
+//        for (String hidden : hiddens.keySet()) {
+//
+//            if (! relevant.contains(hidden)) {
+//
+//                hiddens.remove(hidden);
+//            }
+//        }
+
+        return relevant;
     }
 
     Factor Join (String name) {
@@ -156,6 +226,9 @@ public class VariableEliminationAlgo {
 
                 if (flag) {
 
+//                    if (! hash.containsKey("P")) hash.put("P", factor.getTable().get(i).get("P"))) System.out.println("NNNNNNNNNNNOOOOOOOOOOOOOOO!!!!!!!!!!");
+
+                    if (! hash.containsKey("P")) System.out.println("NNNNNNNNNNNOOOOOOOOOOOOOOO!!!!!!!!!!");
                     addCounter++;
                     hash.put("P", String.valueOf(Double.parseDouble(hash.get("P"))+Double.parseDouble(factor.getTable().get(i).get("P"))));
                     factor.getTable().remove(i);
@@ -165,8 +238,9 @@ public class VariableEliminationAlgo {
             arr.add(hash);
         }
         if ( arr.size() > 1)  {
-
-            factorsList.add(new Factor(variables, arr));
+            Factor f = new Factor(variables, arr);
+            factorsList.add(f);
+            System.out.println("Elimination Factor: " + f);
         }
 
     }
@@ -174,7 +248,7 @@ public class VariableEliminationAlgo {
     public Double Normalize() {
 
         Factor last = Join(query[0]);
-        System.out.println(last);
+        System.out.println("last Factor: " + last);
         double numerator = 0.0;
         double denominator = 0.0;
 
@@ -182,12 +256,21 @@ public class VariableEliminationAlgo {
 
             if (Objects.equals(hash.get(query[0]), query[1])) {
 
-                addCounter++;
-                numerator += Double.parseDouble(hash.get("P"));
+                if (numerator == 0) numerator = Double.parseDouble(hash.get("P"));
+
+                else {
+                    addCounter++;
+                    numerator += Double.parseDouble(hash.get("P"));
+                }
             }
             else {
-                addCounter++;
-                denominator += Double.parseDouble(hash.get("P"));
+
+                if (denominator == 0) denominator = Double.parseDouble(hash.get("P"));
+
+                else {
+                    addCounter++;
+                    denominator += Double.parseDouble(hash.get("P"));
+                }
             }
         }
         addCounter++;
@@ -227,4 +310,61 @@ public class VariableEliminationAlgo {
 
         return "SimpleAlgo: { " + st + " }";
     }
+
+//    public static class Comparators {
+//
+//        public static Comparator<HashMap<String, ArrayList<String>>> ABC = new Comparator<HashMap<String, ArrayList<String>>>() {
+//
+//            @Override
+//            public int compare(HashMap<String, ArrayList<String>> map1, HashMap<String, ArrayList<String>> map2) {
+//                return map1..compareToIgnoreCase(s2)
+//            }
+//
+//            @Override
+//            public int compare(Factor f1, Factor f2) {
+//                // check by size:
+//                if (f1.getTableSize() > f2.getTableSize()) {
+//                    return 1;
+//                } else if (f1.getTableSize() < f2.getTableSize()) {
+//                    return -1;
+//                }
+//
+//                // if they have the same size:
+//                int s1 = 0;
+//                int s2 = 0;
+//
+//                for (String var : f2.variables) {
+//                    for (int i = 0; i < var.length(); i++) {
+//                        s1 += var.charAt(i);
+//                    }
+//                }
+//
+//                for (String var : f2.getVariables()) {
+//                    for (int i = 0; i < var.length(); i++) {
+//                        s2 += var.charAt(i);
+//                    }
+//                }
+//
+//                // check ascii size:
+//                return Integer.compare(s1, s2);
+//            }
+//        };
+//
+//        public static Comparator<Factor> AGE = new Comparator<Student>() {
+//            @Override
+//            public int compare(Student o1, Student o2) {
+//                return o1.age - o2.age;
+//            }
+//        };
+//        public static Comparator<Student> NAMEANDAGE = new Comparator<Student>() {
+//            @Override
+//            public int compare(Student o1, Student o2) {
+//                int i = o1.name.compareTo(o2.name);
+//                if (i == 0) {
+//                    i = o1.age - o2.age;
+//                }
+//                return i;
+//            }
+//        };
+//    }
 }

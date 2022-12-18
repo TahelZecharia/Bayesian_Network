@@ -17,8 +17,11 @@ class SimpleAlgoTest {
 
         System.out.println(mySimpleAlgo1);
 
-        System.out.printf("%.5f%n", mySimpleAlgo1.CalculateQuery()); // 0.28417
-        System.out.printf("%.5f%n", mySimpleAlgo2.CalculateQuery()); // 0.84902
+//        System.out.printf("%.5f%n", mySimpleAlgo1.CalculateQuery()); // 0.28417
+//        System.out.printf("%.5f%n", mySimpleAlgo2.CalculateQuery()); // 0.84902
+
+        assertEquals(String.format("%.5f", mySimpleAlgo1.CalculateQuery()), "0.28417");
+//        assertEquals(String.format("%.5f", mySimpleAlgo2.CalculateQuery()), "0.84902");
     }
 
     @Test

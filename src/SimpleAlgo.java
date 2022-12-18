@@ -95,11 +95,21 @@ public class SimpleAlgo {
                 for (String perent : node.getParents()){
                     parents.put(perent, comb.get(perent));
                 }
-                mulCounter++;
-                x *= node.getCPT().getProb(parents);
+
+                if (x == 1) x = node.getCPT().getProb(parents);
+
+                else {
+                    mulCounter++;
+                    x *= node.getCPT().getProb(parents);
+                }
             }
-            addCounter++;
-            ans+=x;
+
+            if (ans == 0) ans = x;
+
+            else {
+                addCounter++;
+                ans+=x;
+            }
         }
         return ans;
     }

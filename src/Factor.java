@@ -82,6 +82,58 @@ public class Factor implements Comparable<Factor>{
                 "}";
     }
 
+//    public static class Comparators {
+//
+//        public static Comparator<Factor> SIZE = new Comparator<Factor>() {
+//
+//            @Override
+//            public int compare(Factor f1, Factor f2) {
+//                // check by size:
+//                if (f1.getTableSize() > f2.getTableSize()) {
+//                    return 1;
+//                } else if (f1.getTableSize() < f2.getTableSize()) {
+//                    return -1;
+//                }
+//
+//                // if they have the same size:
+//                int s1 = 0;
+//                int s2 = 0;
+//
+//                for (String var : f2.variables) {
+//                    for (int i = 0; i < var.length(); i++) {
+//                        s1 += var.charAt(i);
+//                    }
+//                }
+//
+//                for (String var : f2.getVariables()) {
+//                    for (int i = 0; i < var.length(); i++) {
+//                        s2 += var.charAt(i);
+//                    }
+//                }
+//
+//                // check ascii size:
+//                return Integer.compare(s1, s2);
+//            }
+//        };
+//
+//        public static Comparator<Factor> AGE = new Comparator<Student>() {
+//            @Override
+//            public int compare(Student o1, Student o2) {
+//                return o1.age - o2.age;
+//            }
+//        };
+//        public static Comparator<Student> NAMEANDAGE = new Comparator<Student>() {
+//            @Override
+//            public int compare(Student o1, Student o2) {
+//                int i = o1.name.compareTo(o2.name);
+//                if (i == 0) {
+//                    i = o1.age - o2.age;
+//                }
+//                return i;
+//            }
+//        };
+//    }
+
     @Override
     public int compareTo(Factor o) {
 
