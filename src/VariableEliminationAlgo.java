@@ -76,6 +76,7 @@ public class VariableEliminationAlgo {
 
 
     Double CalculateQuery(int algo) {
+        PriorityQueue<String> queue;
 
         ArrayList<String> sortHidden = new ArrayList<>(RemoveUnnecessaryVariables());
 
@@ -89,27 +90,57 @@ public class VariableEliminationAlgo {
         }
 
         if (algo == 2) {
-            sortHidden.sort(String::compareToIgnoreCase);
-        }
-        if (algo == 3) {
-
-            sortHidden.sort(new Factors2());
-
+            queue = new PriorityQueue<>(String::compareToIgnoreCase);
+//            sortHidden.sort(String::compareToIgnoreCase);
 
         }
+        else  {
+
+            queue = new PriorityQueue<>(new Factors1());
+
+//            sortHidden.sort(new Factors2());
 
 
+        }
+        queue.addAll(sortHidden);
 
+        while (!queue.isEmpty()){
 
-        for (String hidden : sortHidden) {
+            String curr = queue.poll();
 
-            Factor factor = Join(hidden);
+            Factor factor = Join(curr);
 
             System.out.println("Join ");
 
-            Elimination(hidden, factor);
+            Elimination(curr, factor);
 
+            queue.add(curr);
+            queue.remove(curr);
         }
+
+//        while (!sortHidden.isEmpty()){
+//
+//            Factor factor = Join(sortHidden.get(0));
+//
+//            System.out.println("Join ");
+//
+//            Elimination(sortHidden.get(0), factor);
+//
+//            sortHidden.remove(0);
+//
+//            if (algo == 3) sortHidden.sort(new Factors2());
+//
+//        }
+
+//        for (String hidden : sortHidden) {
+//
+//            Factor factor = Join(hidden);
+//
+//            System.out.println("Join ");
+//
+//            Elimination(hidden, factor);
+//
+//        }
         return Normalize();
     }
 
