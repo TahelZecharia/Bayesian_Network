@@ -18,7 +18,7 @@ public class Ex1 {
             try{
 
                 // open input file:
-                File inputFile = new File("input.txt");
+                File inputFile = new File("input2.txt");
                 Scanner scanner = new Scanner(inputFile);
 
                 BayesianNetwork myNet = new BayesianNetwork();

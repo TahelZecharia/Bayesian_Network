@@ -74,29 +74,10 @@ public class VariableEliminationAlgo {
         }
     }
 
-//    void sort(ArrayList<String> sortHidden) {
-//
-//        Stack<String> heads = new Stack<>();
-//        for (String hidden : sortHidden) {
-//            if (net.getNode(hidden).getParents().size() == 0) {
-//                heads.add(hidden)
-//            }
-//        }
-//    }
 
     Double CalculateQuery(int algo) {
 
         ArrayList<String> sortHidden = new ArrayList<>(RemoveUnnecessaryVariables());
-
-        if (algo == 2) {
-            sortHidden.sort(String::compareToIgnoreCase);
-        }
-        if (algo == 3) {
-
-            sortHidden.sort(new DEG());
-
-        }
-
 
         // factors:
         for (String hidden : sortHidden) {
@@ -107,6 +88,19 @@ public class VariableEliminationAlgo {
             System.out.println(factor);
         }
 
+        if (algo == 2) {
+            sortHidden.sort(String::compareToIgnoreCase);
+        }
+        if (algo == 3) {
+
+            sortHidden.sort(new Factors2());
+
+
+        }
+
+
+
+
         for (String hidden : sortHidden) {
 
             Factor factor = Join(hidden);
@@ -114,6 +108,7 @@ public class VariableEliminationAlgo {
             System.out.println("Join ");
 
             Elimination(hidden, factor);
+
         }
         return Normalize();
     }
@@ -321,21 +316,52 @@ public class VariableEliminationAlgo {
         return "SimpleAlgo: { " + st + " }";
     }
 
-    class DEG implements Comparator<String> {
+    class Factors1 implements Comparator<String> {
 
-    @Override
-    public int compare(String s1, String s2) {
+        @Override
+        public int compare(String s1, String s2) {
 
-        ArrayList<String> parentsS1 = new ArrayList<>(net.getNode(s1).getParents());
-        ArrayList<String> parentsS2 = new ArrayList<>(net.getNode(s2).getParents());
+            int countS1 = 0;
+            int countS2 = 0;
 
-        for (String evidence : evidences.keySet()) {
-            parentsS1.remove(evidence);
-            parentsS2.remove(evidence);
+
+            for (Factor factor : factorsList) {
+
+                if (factor.getVariables().contains(s1)) countS1+= factor.getTableSize();
+                if (factor.getVariables().contains(s2)) countS2+= factor.getTableSize();
+            }
+
+            return Integer.compare(countS1, countS2);
         }
-        return Integer.compare(parentsS1.size(), parentsS2.size());
-    }
-};
+    };
+
+    class Factors2 implements Comparator<String> {
+
+        @Override
+        public int compare(String s1, String s2) {
+
+            int countS1 = 0;
+            int countS2 = 0;
+
+            HashSet<String> set1 = new HashSet<>();
+            HashSet<String> set2 = new HashSet<>();
+
+            for (Factor factor : factorsList) {
+
+                if (factor.getVariables().contains(s1)) set1.addAll(factor.getVariables());
+                if (factor.getVariables().contains(s2)) set2.addAll(factor.getVariables());
+            }
+
+            for (String var : set1) {
+                countS1 += net.getNode(var).outcomesSize();
+            }
+            for (String var : set2) {
+                countS2 += net.getNode(var).outcomesSize();
+            }
+
+            return Integer.compare(countS1, countS2);
+        }
+    };
 
 //            @Override
 //            public int compare(HashMap<String, ArrayList<String>> map1, HashMap<String, ArrayList<String>> map2) {

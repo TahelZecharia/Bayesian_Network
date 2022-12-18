@@ -31,6 +31,14 @@ public class BayesianNetwork {
         return null;
     }
 
+    public ArrayList<String> getChildren(String name) {
+
+        if (Children.containsKey(name))
+            return Children.get(name);
+
+        return null;
+    }
+
     public void addNode(String name, Node node){
 
         this.Nodes.put(name, node);
@@ -50,9 +58,9 @@ public class BayesianNetwork {
     public void addChild(String node, String child){
 
         if (!Children.containsKey(node)) {
-            Parents.put(node, new ArrayList<>());
+            Children.put(node, new ArrayList<>());
         }
-        Parents.get(node).add(child);
+        Children.get(node).add(child);
     }
 
     @Override
