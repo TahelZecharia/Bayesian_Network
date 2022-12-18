@@ -74,10 +74,30 @@ public class VariableEliminationAlgo {
         }
     }
 
-    Double CalculateQuery() {
+//    void sort(ArrayList<String> sortHidden) {
+//
+//        Stack<String> heads = new Stack<>();
+//        for (String hidden : sortHidden) {
+//            if (net.getNode(hidden).getParents().size() == 0) {
+//                heads.add(hidden)
+//            }
+//        }
+//    }
+
+    Double CalculateQuery(int algo) {
 
         ArrayList<String> sortHidden = new ArrayList<>(RemoveUnnecessaryVariables());
-        sortHidden.sort(String::compareToIgnoreCase);
+
+        if (algo == 2) {
+            sortHidden.sort(String::compareToIgnoreCase);
+        }
+        if (algo == 3) {
+
+            sortHidden.sort(new DEG());
+
+        }
+
+
         // factors:
         for (String hidden : sortHidden) {
 
@@ -301,10 +321,22 @@ public class VariableEliminationAlgo {
         return "SimpleAlgo: { " + st + " }";
     }
 
-//    public static class Comparators {
-//
-//        public static Comparator<HashMap<String, ArrayList<String>>> ABC = new Comparator<HashMap<String, ArrayList<String>>>() {
-//
+    class DEG implements Comparator<String> {
+
+    @Override
+    public int compare(String s1, String s2) {
+
+        ArrayList<String> parentsS1 = new ArrayList<>(net.getNode(s1).getParents());
+        ArrayList<String> parentsS2 = new ArrayList<>(net.getNode(s2).getParents());
+
+        for (String evidence : evidences.keySet()) {
+            parentsS1.remove(evidence);
+            parentsS2.remove(evidence);
+        }
+        return Integer.compare(parentsS1.size(), parentsS2.size());
+    }
+};
+
 //            @Override
 //            public int compare(HashMap<String, ArrayList<String>> map1, HashMap<String, ArrayList<String>> map2) {
 //                return map1..compareToIgnoreCase(s2)

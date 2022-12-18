@@ -60,7 +60,7 @@ public class SimpleAlgo {
 
     public Double CalculateQuery(){
 
-        if (net.getNode(query[0]).getParents().containsAll(evidences.keySet())) {
+        if (net.getNode(query[0]).getParents().containsAll(evidences.keySet()) && evidences.keySet().containsAll(net.getNode(query[0]).getParents())){
 
             HashMap<String, String> outcomes = new HashMap<>(evidences);
             outcomes.put(query[0], query[1]);
