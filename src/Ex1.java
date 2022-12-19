@@ -37,41 +37,44 @@ public class Ex1 {
 
                 while (scanner.hasNextLine()) {
 
-//                    set_addup();
                     String data = scanner.nextLine();
-                    String algo = data.substring(data.length()-1);
+                    int algo = Integer.parseInt(data.substring(data.length()-1));
                     String query = data.substring(0, data.length()-2);
+//
+//                    double ans = 0.0;
+//                    int add = 0;
+//                    int mul = 0;
 
-                    double ans = 0.0;
-                    int add = 0;
-                    int mul = 0;
-
-                    if (Objects.equals(algo, "1")) {
-
-                        SimpleAlgo myAlgo = new SimpleAlgo(myNet, query);
-                        ans = myAlgo.CalculateQuery();
-                        add = myAlgo.getAddCounter();
-                        mul = myAlgo.getMulCounter();
-
-                    }
-                    else if (Objects.equals(algo, "2")) {
+//                    if (Objects.equals(algo, "1")) {
+//
+//                        SimpleAlgo myAlgo = new SimpleAlgo(myNet, query);
+//                        ans = myAlgo.CalculateQuery();
+//                        add = myAlgo.getAddCounter();
+//                        mul = myAlgo.getMulCounter();
+//
+//                    }
+//                    else if (Objects.equals(algo, "2")) {
+////                    else{
+//
+//                        VariableEliminationAlgo myAlgo = new VariableEliminationAlgo(myNet, query);
+//                        ans = myAlgo.CalculateQuery(2);
+//                        add = myAlgo.getAddCounter();
+//                        mul = myAlgo.getMulCounter();
+//                    }
+//
 //                    else{
+//
+//                        VariableEliminationAlgo myAlgo = new VariableEliminationAlgo(myNet, query);
+//                        ans = myAlgo.CalculateQuery(3);
+//                        add = myAlgo.getAddCounter();
+//                        mul = myAlgo.getMulCounter();
+//                    }
 
-                        VariableEliminationAlgo myAlgo = new VariableEliminationAlgo(myNet, query);
-                        ans = myAlgo.CalculateQuery(2);
-                        add = myAlgo.getAddCounter();
-                        mul = myAlgo.getMulCounter();
-                    }
+                    Algo myAlgo = new Algo(myNet, query);
+                    double ans = myAlgo.CalculateQuery(algo);
+                    int add = myAlgo.getAddCounter();
+                    int mul = myAlgo.getMulCounter();
 
-                    else{
-
-                        VariableEliminationAlgo myAlgo = new VariableEliminationAlgo(myNet, query);
-                        ans = myAlgo.CalculateQuery(3);
-                        add = myAlgo.getAddCounter();
-                        mul = myAlgo.getMulCounter();
-                    }
-
-//                    else ans=3.0;
 
                     outputFile.write(String.format("%.5f", ans) + "," + add + "," + mul);
 
