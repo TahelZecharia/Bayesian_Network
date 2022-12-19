@@ -416,31 +416,6 @@ public class Algo {
         return (numerator/(numerator+denominator));
     }
 
-
-    @Override
-    public String toString() {
-
-        String st = "";
-
-        st+="query: " + Arrays.toString(query) + ". ";
-
-        st+="not query: " + notQuery.toString() + ". ";
-
-        st+= "evidence: " + evidences.toString() + ". ";
-
-        st+= "hidden: {";
-        for (String string : hiddens.keySet()) {
-
-            st += string + ": ";
-            st += hiddens.get(string).toString()+", ";
-        }
-
-        st+= "factors: " + factorsList.toString() + ". ";
-        st+= "}.";
-
-        return "SimpleAlgo: { " + st + " }";
-    }
-
     /**
      * **************************** PART 3 : Variable Elimination Algo With Heuristic Elimination ****************************
      */
@@ -511,4 +486,28 @@ public class Algo {
             return Integer.compare(countS1, countS2);
         }
     };
+
+    @Override
+    public String toString() {
+
+        String st = "";
+
+        st+="query: " + Arrays.toString(query) + ". ";
+
+        st+="not query: " + notQuery.toString() + ". ";
+
+        st+= "evidence: " + evidences.toString() + ". ";
+
+        st+= "hidden: {";
+        for (String string : hiddens.keySet()) {
+
+            st += string + ": ";
+            st += hiddens.get(string).toString()+", ";
+        }
+
+        st+= "factors: " + factorsList.toString() + ". ";
+        st+= "}.";
+
+        return "Algo: { " + st + " }";
+    }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AlgoTest {
 
     BayesianNetwork alarmNet = new BayesianNetwork().readXML("alarm_net.xml");
+    BayesianNetwork bigNet = new BayesianNetwork().readXML("big_net.xml");
 
     @Test
     void calculateQuery() {
@@ -44,6 +45,17 @@ class AlgoTest {
         algo3 = new Algo(alarmNet, "P(A=T|B=F,E=T)");
         ans = (String.format("%.5f", algo3.CalculateQuery(3))+ "," + algo3.getAddCounter() + "," + algo3.getMulCounter());
         assertEquals(ans, "0.29000,0,0");
+
+        // 3) big net:
+        Algo algo4 = new Algo(bigNet, "P(B0=v3|C3=T,B2=F,C2=v3)");
+        ans = (String.format("%.5f", algo4.CalculateQuery(1))+ "," + algo4.getAddCounter() + "," + algo4.getMulCounter());
+        assertEquals(ans, "0.42307,383,3840");
+        algo4 = new Algo(bigNet, "P(B0=v3|C3=T,B2=F,C2=v3)");
+        ans = (String.format("%.5f", algo4.CalculateQuery(2))+ "," + algo4.getAddCounter() + "," + algo4.getMulCounter());
+        assertEquals(ans, "0.42307,13,27");
+        algo4 = new Algo(bigNet, "P(B0=v3|C3=T,B2=F,C2=v3)");
+        ans = (String.format("%.5f", algo4.CalculateQuery(3))+ "," + algo4.getAddCounter() + "," + algo4.getMulCounter());
+        assertEquals(ans, "0.42307,13,27");
 
     }
 }

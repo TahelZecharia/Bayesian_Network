@@ -23,7 +23,7 @@ public class CPT {
             table[0][j] = parents.get(j);
         }
 
-        int slice = 1;
+        int block = 1;
         ArrayList<String> outcomes = node.getOutcomes();
 
         for (int j = cols-2; j >= 0; j--) {
@@ -33,17 +33,17 @@ public class CPT {
 
             for (int i = 1; i < rows; i++) {
 
-                if (in_count < slice) {
+                if (in_count < block) {
                     table[i][j] = outcomes.get(out_count);
                     in_count++;
                 }
 
-                if (in_count >= slice && out_count < outcomes.size()-1) {
+                if (in_count >= block && out_count < outcomes.size()-1) {
                     out_count++;
                     in_count = 0;
                 }
 
-                else if (in_count >= slice && out_count == outcomes.size()-1) {
+                else if (in_count >= block && out_count == outcomes.size()-1) {
                     out_count = 0;
                     in_count = 0;
                 }
@@ -51,7 +51,7 @@ public class CPT {
             }
             if(j != 0) {
 
-                slice = slice * outcomes.size();
+                block = block * outcomes.size();
                 outcomes = net.getNode(table[0][j - 1]).getOutcomes();
 
             }
@@ -61,11 +61,6 @@ public class CPT {
             table[i][cols-1] = cpt[j];
         }
 
-    }
-
-    String[][] getTable(){
-
-        return table;
     }
 
     String getTable(int row, int col){
