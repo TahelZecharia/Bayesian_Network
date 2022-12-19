@@ -63,7 +63,16 @@ public class Algo {
             }
         }
     }
+
     public Double CalculateQuery(int algo){
+
+        if (net.getNode(query[0]).getParents().containsAll(evidences.keySet()) && evidences.keySet().containsAll(net.getNode(query[0]).getParents())){
+
+            HashMap<String, String> outcomes = new HashMap<>(evidences);
+            outcomes.put(query[0], query[1]);
+
+            return net.getNode(query[0]).getCPT().getProb(outcomes);
+        }
 
         if (algo == 1) {
 
@@ -93,14 +102,6 @@ public class Algo {
      */
 
     public Double SimpleAlgo(){
-
-        if (net.getNode(query[0]).getParents().containsAll(evidences.keySet()) && evidences.keySet().containsAll(net.getNode(query[0]).getParents())){
-
-            HashMap<String, String> outcomes = new HashMap<>(evidences);
-            outcomes.put(query[0], query[1]);
-
-            return net.getNode(query[0]).getCPT().getProb(outcomes);
-        }
 
         HashMap<String, ArrayList<String>> denominator = new HashMap<>();
         HashMap<String, ArrayList<String>> numerator = new HashMap<>(hiddens);
