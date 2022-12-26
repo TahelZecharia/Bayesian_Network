@@ -58,4 +58,14 @@ class AlgoTest {
         assertEquals(ans, "0.42307,13,27");
 
     }
+
+    @Test
+    void net3() {
+
+        BayesianNetwork net3 = new BayesianNetwork().readXML("net3.xml");
+        Algo algo1 = new Algo(net3, "P(S=ok|M=N)");
+        String ans = (String.format("%.5f", algo1.CalculateQuery(1))+ "," + algo1.getAddCounter() + "," + algo1.getMulCounter());
+        assertEquals(ans, "0.37606,17,54");
+
+    }
 }

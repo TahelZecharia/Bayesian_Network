@@ -28,17 +28,17 @@ public class Algo {
         q = q.replace(")","");
 
 
-        String[] quer=q.split("\\|");
+        String[] q1=q.split("\\|");
 
         // query:
-        String[] qqq =quer[0].split("=");
-        query[0] = qqq[0];
-        query[1] = qqq[1];
+        String[] q2 =q1[0].split("=");
+        query[0] = q2[0];
+        query[1] = q2[1];
 
         // evidences:
-        if(quer.length>=2){
+        if(q1.length>=2){
 
-            String[] evidences=quer[1].split(",");
+            String[] evidences=q1[1].split(",");
             for (String evidence : evidences) {
                 this.evidences.put(evidence.split("=")[0], evidence.split("=")[1]);
             }
@@ -55,7 +55,7 @@ public class Algo {
         // hidden:
         for (String node : bayesianNetwork.getNodes().keySet()) {
 
-            if (!q.contains(node)){
+            if (!evidences.containsKey(node) && !query[0].equals(node)){
                 hiddens.put(node, new ArrayList<>());
                 for (String outcome : bayesianNetwork.getNode(node).getOutcomes()){
                     hiddens.get(node).add(outcome);
@@ -64,6 +64,11 @@ public class Algo {
         }
     }
 
+    /**
+     * The function checks whether the solution to the query already appears
+     * in one of the tables. If so, it returns the result without calculation.
+     * If not, it sends the query to the desired algorithm (1, 2 or 3).
+     */
     public Double CalculateQuery(int algo){
 
         if (net.getNode(query[0]).getParents().containsAll(evidences.keySet()) && evidences.keySet().containsAll(net.getNode(query[0]).getParents())){
@@ -101,6 +106,13 @@ public class Algo {
      * **************************** PART 1 : Simple Algo ****************************
      */
 
+
+    /**
+     * The main function to calculate the first algorithm.
+     * The function calculates all possible combinations to calculate the
+     * probability, and for each of them calculates the probability.
+     * Finally, the function adds all the results and normalizes.
+     */
     public Double SimpleAlgo(){
 
         HashMap<String, ArrayList<String>> denominator = new HashMap<>();
@@ -120,6 +132,10 @@ public class Algo {
         return numeratorAns/(numeratorAns+denominatorAns);
     }
 
+    /**
+     * The function calculates the probability for each of the combinations
+     * and returns the sum of the probabilities.
+     */
     public Double CalculateProb(ArrayList<HashMap<String, String>> combinations){
 
         double ans = 0;
@@ -156,6 +172,10 @@ public class Algo {
         return ans;
     }
 
+    /**
+     * The function calculates all possible combinations for the variables
+     * and the list of their outcomes that it receives as input.
+     */
     public ArrayList<HashMap<String, String>> combinations (HashMap<String, ArrayList<String>> outcomes){
 
         ArrayList<HashMap<String, String>> ans = new ArrayList<>();
@@ -193,19 +213,26 @@ public class Algo {
      * **************************** PART 2 : Variable Elimination Algo ****************************
      */
 
+
+    /**
+     * The main function that calculates algorithms 2 and 3.
+     * The function initializes a list of factors, removes the irrelevant hidden,
+     * then calculates the probability according to the desired algorithm (2 or 3)
+     * and finally normalizes the result.
+     */
     Double VariableEliminationAlgo(int algo) {
 
         // adding the factor of the query:
         Factor factor = new Factor(net.getNode(query[0]).getCPT(), evidences);
         factorsList.add(factor);
-        System.out.println( "Query Factor: " + factor);
+//        System.out.println( "Query Factor: " + factor);
 
         // adding the factors of the evidences:
         for (String evidence : evidences.keySet()) {
             factor = new Factor(net.getNode(evidence).getCPT(), evidences);
             if (factor.getVariables().size() > 0){
                 factorsList.add(factor);
-                System.out.println("Evidences Factor: " + factor);
+//                System.out.println("Evidences Factor: " + factor);
             }
         }
 
@@ -217,7 +244,7 @@ public class Algo {
             Node node = net.getNode(hidden);
             factor = new Factor(node.getCPT(), evidences);
             factorsList.add(factor);
-            System.out.println(factor);
+//            System.out.println(factor);
         }
 
         if (algo == 2) {
@@ -233,6 +260,10 @@ public class Algo {
         return Normalize();
     }
 
+    /**
+     * The function sends the variables for elimination when the
+     * order of elimination of the variables is according to the ABC order.
+     */
     void ABCElimination (ArrayList<String> hiddenList) {
 
         hiddenList.sort(String::compareToIgnoreCase);
@@ -241,12 +272,14 @@ public class Algo {
 
             Factor factor = Join(hidden);
 
-            System.out.println("Join ");
-
             Elimination(hidden, factor);
         }
     }
 
+    /**
+     * The function removes all variables that are unnecessary for the query
+     * and returns a set containing the necessary variables.
+     */
     private HashSet<String> RemoveUnnecessaryVariables() {
 
         HashSet <String> relevant = new HashSet<>();
@@ -288,6 +321,10 @@ public class Algo {
         return relevant;
     }
 
+    /**
+     * The function multiplies all the factors that contain the input variable
+     * and returns a final factor after all the multiplications.
+     */
     Factor Join (String name) {
 
         ArrayList<Factor> joinFactors = new ArrayList<>();
@@ -342,6 +379,11 @@ public class Algo {
         return joinFactors.get(0);
     }
 
+    /**
+     * The function accepts a factor and a variable, and connects the
+     * identical rows containing different values of the variable. If the created
+     * factor contains only one line, the function will not return it to the list of factors.
+     */
     public void Elimination(String name, Factor factor) {
 
         ArrayList<HashMap<String, String>> arr = new ArrayList<>();
@@ -365,9 +407,6 @@ public class Algo {
 
                 if (flag) {
 
-//                    if (! hash.containsKey("P")) hash.put("P", factor.getTable().get(i).get("P"))) System.out.println("NNNNNNNNNNNOOOOOOOOOOOOOOO!!!!!!!!!!");
-
-                    if (! hash.containsKey("P")) System.out.println("NNNNNNNNNNNOOOOOOOOOOOOOOO!!!!!!!!!!");
                     addCounter++;
                     hash.put("P", String.valueOf(Double.parseDouble(hash.get("P"))+Double.parseDouble(factor.getTable().get(i).get("P"))));
                     factor.getTable().remove(i);
@@ -379,15 +418,20 @@ public class Algo {
         if ( arr.size() > 1)  {
             Factor f = new Factor(variables, arr);
             factorsList.add(f);
-            System.out.println("Elimination Factor: " + f);
+//            System.out.println("Elimination Factor: " + f);
         }
 
     }
 
+    /**
+     * The last step in the algorithm. The function normalizes the query result
+     * according to the last remaining factors, which contain only the query variable,
+     * and finally returns the query result.
+     */
     public Double Normalize() {
 
         Factor last = Join(query[0]);
-        System.out.println("last Factor: " + last);
+//        System.out.println("last Factor: " + last);
         double numerator = 0.0;
         double denominator = 0.0;
 
@@ -420,6 +464,11 @@ public class Algo {
      * **************************** PART 3 : Variable Elimination Algo With Heuristic Elimination ****************************
      */
 
+    /**
+     * The function sends the variables for elimination when the
+     * order of elimination of the variables is according to the heuristic order:
+     * The variable that is connected to the smallest factors is eliminated first.
+     */
     void HeuristicElimination (ArrayList<String> hiddenList) {
 
         PriorityQueue<String> queue = new PriorityQueue<>(new Factors1());
@@ -429,9 +478,15 @@ public class Algo {
 
             String curr = queue.poll();
 
-            Factor factor = Join(curr);
+            int countS1 = 0;
 
-            System.out.println("Join ");
+
+            for (Factor factor : factorsList) {
+
+                if (factor.getVariables().contains(curr)) countS1+= factor.getTableSize();
+            }
+
+            Factor factor = Join(curr);
 
             Elimination(curr, factor);
 
@@ -440,6 +495,10 @@ public class Algo {
         }
     }
 
+    /**
+     * This comparator compares two strings of variable names.
+     * * The variable that is connected to the smallest factors is smallest.
+     */
     class Factors1 implements Comparator<String> {
 
         @Override
@@ -459,33 +518,36 @@ public class Algo {
         }
     };
 
-    class Factors2 implements Comparator<String> {
-
-        @Override
-        public int compare(String s1, String s2) {
-
-            int countS1 = 0;
-            int countS2 = 0;
-
-            HashSet<String> set1 = new HashSet<>();
-            HashSet<String> set2 = new HashSet<>();
-
-            for (Factor factor : factorsList) {
-
-                if (factor.getVariables().contains(s1)) set1.addAll(factor.getVariables());
-                if (factor.getVariables().contains(s2)) set2.addAll(factor.getVariables());
-            }
-
-            for (String var : set1) {
-                countS1 += net.getNode(var).outcomesSize();
-            }
-            for (String var : set2) {
-                countS2 += net.getNode(var).outcomesSize();
-            }
-
-            return Integer.compare(countS1, countS2);
-        }
-    };
+//    class Factors2 implements Comparator<String> {
+//
+//        @Override
+//        public int compare(String s1, String s2) {
+//
+//            int countS1 = 0;
+//            int countS2 = 0;
+//
+//            HashSet<String> set1 = new HashSet<>();
+//            HashSet<String> set2 = new HashSet<>();
+//
+//            for (Factor factor : factorsList) {
+//
+//                if (factor.getVariables().contains(s1)) set1.addAll(factor.getVariables());
+//                if (factor.getVariables().contains(s2)) set2.addAll(factor.getVariables());
+//            }
+//
+//            set1.remove(s1);
+//            set2.remove(s2);
+//
+//            for (String var : set1) {
+//                countS1 += net.getNode(var).outcomesSize();
+//            }
+//            for (String var : set2) {
+//                countS2 += net.getNode(var).outcomesSize();
+//            }
+//
+//            return Integer.compare(countS1, countS2);
+//        }
+//    };
 
     @Override
     public String toString() {
