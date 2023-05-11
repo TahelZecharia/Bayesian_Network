@@ -2,7 +2,7 @@
 
 ## Implementation of a Bayesian Network and probability calculation algorithms.
 
-![Alarm-CPT](https://github.com/TahelZecharia/Bayesian_Networks/assets/93916792/183d5d2f-4901-4e62-8d93-eee6f09648ce)
+![Alarm-CPT](https://github.com/TahelZecharia/Bayesian_Network/assets/93916792/57f55fdc-d1c0-470e-87e6-20a0c6c9ca8b)
 
 #### 1. Simple probabilistic inference.
 
